@@ -14,8 +14,10 @@ class List (list):
 class String(str):
     def flatten(self):
         return " ".join([line.strip() for line in self.splitlines()])
+    def typograf(self):
+        return "\n".join([line.strip() for line in self.splitlines()])
         
-knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','ss'])
+knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','ss','th','st','nd','rd'])
 spell = SpellChecker()
 
 def write(text,type_='weekly'):
@@ -29,7 +31,7 @@ def write(text,type_='weekly'):
     words = re.findall(r'[^0-9!"#$%&\'()*+,-./:;<=>?@^_`{|}~\\\[\] ]+',text.flatten())
     misspelled = List(spell.unknown(words)) - knownword or "None"
     res = f'number of words is {len(words)} ,should be between {minw} - {maxw} words\nwords that may be misspelled : {misspelled}'
-    pyperclip.copy(text.flatten())
+    pyperclip.copy(text.typograf())
     print(res)
     return res
 
@@ -38,8 +40,9 @@ if __name__ == '__main__':
                         10:00-11:00(WITA) - [Mandatory] I did the english pre-test from bangkit.
                         16:30-18:00(WITA) - [Non-Mandatory] I joined guest speaker session #1 at bangkit youtube channel''')
 
-    print(spell.split_words(Text_))
-    print(re.findall(r'[^0-9!"#$%&\'()*+,-./:;<=>?@^_`{|}~\\\[\] ]+',Text_.flatten()))
+    # print(spell.split_words(Text_))
+    print(Text_.typograf())
+    print(re.findall(r'[^0-9!"#$%&\'()*+,-./:;<=>?@^_`{|}~\\\[\] ]+',Text_.typograf()))
     pass
 
 
