@@ -31,7 +31,7 @@ def write(text,type_='weekly'):
     words = re.findall(r'[^0-9!"#$%&\'()*+,-./:;<=>?@^_`{|}~\\\[\] ]+',text.flatten())
     misspelled = List(spell.unknown(words)) - knownword or "None"
     res = f'number of words is {len(words)} ,should be between {minw} - {maxw} words\nwords that may be misspelled : {misspelled}'
-    pyperclip.copy(text.typograf())
+    pyperclip.copy(text.flatten())
     print(res)
     return res
 
