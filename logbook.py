@@ -1,10 +1,9 @@
 import re
 from spellchecker import SpellChecker
 import pyperclip
-
-from tkinter import *
-from tkinter import messagebox
-
+import json
+import os
+import datetime
 class List (list):
     def __sub__(self,other_list):
         for x in other_list:
@@ -16,9 +15,42 @@ class String(str):
         return " ".join([line.strip() for line in self.splitlines()])
     def typograf(self):
         return "\n".join([line.strip() for line in self.splitlines()])
-        
+class Notebook:
+    def __init__(self,source=None) -> None:
+        if source is None:
+            self.source = {
+                'cells':[]
+            } 
+        else:
+            self.source = source
+
+    def __str__(self) -> str:
+        return str(self.source)
+    
+    def addCell(self,type,sources=None,index=None):
+        temp =  {
+            "cell_type":type,
+            "metadata":{},
+            "outputs":[],
+            "source":[]
+            }
+        temp['source'] = sources if sources is not None else ''
+        if index is not None:
+            try:
+                self.source['cells'][index] = temp
+            except Exception as e:
+                print(f'error, {e}')
+        else:
+            self.source['cells'].append(temp)
+    
+    @property
+    def json(self):
+        return json.dumps(self.source)
+            
 knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','ss','th','st','nd','rd'])
 spell = SpellChecker()
+filename = 'logbook.ipynb'
+filepath = os.path.join(os.getcwd(),filename)
 
 def write(text,type_='weekly'):
     '''
@@ -34,6 +66,43 @@ def write(text,type_='weekly'):
     pyperclip.copy(text.flatten())
     print(res)
     return res
+
+def addNewWeek():
+    now = datetime.datetime.now()
+    hari = now.weekday()
+    monday = now.day - hari
+    bulan = now.month
+
+    with open(filepath,'r') as f:
+        json_ = json.load(f)
+        Weeks = list(filter(lambda x: x['cell_type']=='markdown', json_['cells']))
+        Weeks = list(map(lambda x: x['source'][0],Weeks))
+        code_cells = list(filter(lambda x: x['cell_type']=='code', json_['cells']))
+        code_cells = list(map(lambda x: x['source'],code_cells))
+        last_monday = ''
+        for i in range(-2,-10,-1): 
+            if 'weeklyReport' in (code_cells[i][0]):
+                last_monday = code_cells[i+1][0][:5]
+                break
+            i -= 1
+
+    this_monday = datetime.datetime(2023,bulan,monday).strftime('%b%d')
+    if last_monday == this_monday:
+        print("this week's logbook already generated")
+        return
+    
+    next_week = int(Weeks[-1][-1])+1
+
+    with open(filepath,'w') as f:
+        ipymb = Notebook(json_)
+        ipymb.addCell('markdown',[f'### Week {next_week}'])
+        for i in range(5):
+            date = datetime.datetime(2023,bulan,monday+i).strftime('%b%d')
+            ipymb.addCell('code',[
+                f"{date} = logbook.write(''' ''', type_='daily')"
+            ])
+        ipymb.addCell('code',[f"weeklyReport{next_week} = logbook.write(''' ''')"])
+        f.write(ipymb.json)
 
 if __name__ == '__main__':
     Text_ = String('''Today i have 2 activity from bangkit. One is mandatory and the other one is not mandatory
