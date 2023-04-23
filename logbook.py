@@ -1,9 +1,9 @@
 import re
-from spellchecker import SpellChecker
-import pyperclip
-import json
 import os
+import json
 import datetime
+import pyperclip
+from spellchecker import SpellChecker
 class List (list):
     def __sub__(self,other_list):
         for x in other_list:
@@ -84,7 +84,7 @@ def addNewWeek():
             if 'weeklyReport' in (code_cells[i][0]):
                 last_monday = code_cells[i+1][0][:5]
                 break
-            i -= 1
+            
 
     this_monday = datetime.datetime(2023,bulan,monday).strftime('%b%d')
     if last_monday == this_monday:
@@ -105,13 +105,7 @@ def addNewWeek():
         f.write(ipymb.json)
 
 if __name__ == '__main__':
-    Text_ = String('''Today i have 2 activity from bangkit. One is mandatory and the other one is not mandatory
-                        10:00-11:00(WITA) - [Mandatory] I did the english pre-test from bangkit.
-                        16:30-18:00(WITA) - [Non-Mandatory] I joined guest speaker session #1 at bangkit youtube channel''')
-
-    # print(spell.split_words(Text_))
-    print(Text_.typograf())
-    print(re.findall(r'[^0-9!"#$%&\'()*+,-./:;<=>?@^_`{|}~\\\[\] ]+',Text_.typograf()))
+    
     pass
 
 
