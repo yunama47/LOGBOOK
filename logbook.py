@@ -91,7 +91,7 @@ def addNewWeek():
         print("this week's logbook already generated")
         return
     
-    next_week = int(Weeks[-1][-1])+1
+    next_week = int(re.search(r'[\d]+',Weeks[-1]).group()) + 1
 
     with open(filepath,'w') as f:
         ipymb = Notebook(json_)
