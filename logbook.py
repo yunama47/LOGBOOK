@@ -1,56 +1,12 @@
 import re
 import os
 import json
-import datetime
 import pyperclip
 from spellchecker import SpellChecker
-class List (list):
-    def __sub__(self,other_list):
-        for x in other_list:
-            if x in self:
-                self.remove(x)
-        return self
-class String(str):
-    def flatten(self):
-        return " ".join([line.strip() for line in self.splitlines()])
-    def typograf(self):
-        return "\n".join([line.strip() for line in self.splitlines()])
-class Notebook:
-    def __init__(self,source=None) -> None:
-        if source is None:
-            self.source = {
-                'cells':[]
-            } 
-        else:
-            self.source = source
-
-    def __str__(self) -> str:
-        return str(self.source)
-    
-    def addCell(self,type,sources=None,index=None):
-        temp =  {
-            "cell_type":type,
-            "metadata":{},
-            "outputs":[],
-            "source":[]
-            }
-        temp['source'] = sources if sources is not None else ''
-        if index is not None:
-            try:
-                self.source['cells'][index] = temp
-            except Exception as e:
-                print(f'error, {e}')
-        else:
-            self.source['cells'].append(temp)
-    
-    @property
-    def json(self):
-        return json.dumps(self.source)
+from custom_classes import Datetime, List, String, Notebook
             
 knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','ss','th','st','nd','rd'])
 spell = SpellChecker()
-filename = 'logbook.ipynb'
-filepath = os.path.join(os.getcwd(),filename)
 
 def write(text,type_='weekly'):
     '''
@@ -67,12 +23,9 @@ def write(text,type_='weekly'):
     print(res)
     return res
 
-def addNewWeek():
-    now = datetime.datetime.now()
-    hari = now.weekday()
-    monday = now.day - hari
-    bulan = now.month
-
+def addNewWeek(filename:str='logbook.ipynb',monday:Datetime=None):
+    filepath = os.path.join(os.getcwd(),filename)
+    now = Datetime.now()
     with open(filepath,'r') as f:
         json_ = json.load(f)
         Weeks = list(filter(lambda x: x['cell_type']=='markdown', json_['cells']))
@@ -84,23 +37,20 @@ def addNewWeek():
             if 'weeklyReport' in (code_cells[i][0]):
                 last_monday = code_cells[i+1][0][:5]
                 break
-            
-
-    this_monday = datetime.datetime(2023,bulan,monday).strftime('%b%d')
+    start_day = now.week_monday() if monday is None else monday #start from monday
+    this_monday = start_day.strftime('%b%d') 
+    next_week = int(re.search(r'[\d]+',Weeks[-1]).group()) + 1
     if last_monday == this_monday:
         print("this week's logbook already generated")
-        return
-    
-    next_week = int(re.search(r'[\d]+',Weeks[-1]).group()) + 1
-
+        return start_day,next_week, json_, (last_monday == this_monday)
     with open(filepath,'w') as f:
         ipymb = Notebook(json_)
         ipymb.addCell('markdown',[f'### Week {next_week}'])
         for i in range(5):
-            date = datetime.datetime(2023,bulan,monday+i).strftime('%b%d')
             ipymb.addCell('code',[
-                f"{date} = logbook.write(''' ''', type_='daily')"
+                f"{start_day.strftime('%b%d')} = logbook.write(''' ''', type_='daily')"
             ])
+            start_day = start_day.next_day()
         ipymb.addCell('code',[f"weeklyReport{next_week} = logbook.write(''' ''')"])
         f.write(ipymb.json)
 
