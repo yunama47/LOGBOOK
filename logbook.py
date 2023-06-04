@@ -42,7 +42,7 @@ def addNewWeek(filename:str='logbook.ipynb',monday:Datetime=None):
     next_week = int(re.search(r'[\d]+',Weeks[-1]).group()) + 1
     if last_monday == this_monday:
         print("this week's logbook already generated")
-        return start_day,next_week, json_, (last_monday == this_monday)
+        return 
     with open(filepath,'w') as f:
         ipymb = Notebook(json_)
         ipymb.addCell('markdown',[f'### Week {next_week}'])
