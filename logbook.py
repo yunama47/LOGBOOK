@@ -5,7 +5,7 @@ import pyperclip
 from spellchecker import SpellChecker
 from custom_classes import Datetime, List, String, Notebook
             
-knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','ss','th','st','nd','rd'])
+knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','deliverables','ss','th','st','nd','rd'])
 spell = SpellChecker()
 
 def write(text,type_='weekly'):
