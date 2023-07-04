@@ -4,9 +4,12 @@ import json
 import pyperclip
 from spellchecker import SpellChecker
 from custom_classes import Datetime, List, String, Notebook
-            
+
+filename = input('nama file notebook')
 knownword = List(['ilt','bangkit','lusi','am','pm','ml','wita','coursera','dicoding','deliverables','ss','th','st','nd','rd'])
 spell = SpellChecker()
+pattern = r"(^[A-Za-z]+[0-9]{1,2}) = logbook.write\(('''[A-Za-z 0-9!\"#$%&\'()*+,-./:;<=>?@^_`{|}~]+''')"
+filepath = os.path.join(os.getcwd(),filename)
 
 def write(text,type_='weekly'):
     '''
@@ -23,8 +26,7 @@ def write(text,type_='weekly'):
     print(res)
     return res
 
-def addNewWeek(filename:str='logbook.ipynb',monday:Datetime=None):
-    filepath = os.path.join(os.getcwd(),filename)
+def addNewWeek(monday:Datetime=None):
     now = Datetime.now()
     with open(filepath,'r') as f:
         json_ = json.load(f)
